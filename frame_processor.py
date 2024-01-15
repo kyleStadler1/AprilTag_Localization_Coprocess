@@ -43,6 +43,8 @@ class Frame_Processor():
         self._camera_thread.start()
         start_time = t.time()
         while self._run_flag.value:
+            while self._run_flag.value == 2:
+                t.sleep(0.1)
             self._lock.acquire()
             if (not self._frame_ref is None):
                 frame_to_proc = self._frame_ref

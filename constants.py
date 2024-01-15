@@ -78,6 +78,7 @@ AT_ROLL_THRESH = 0.174533 #rads (10deg)
 
 #Multiprocess Pipe Constants
 PIPE_TIMEOUT = 0.001
+RECV_BUF_SIZE = 5 #in pose unites AKA the buf will hold n poses
 
 #Socket Constants
 HOST='stadlerpi.local'
@@ -87,8 +88,8 @@ SENDBUF=8192
 #Debug Print Modes
 CAM_DEBUG_STAT = True
 CAM_DEBUG_ERR = False
-PIPE_DEBUG = True
-POSE_DEBUG = True
+PIPE_DEBUG = False
+POSE_DEBUG = False
 SOCKET_DEBUG = False
 
 #DONT USE
