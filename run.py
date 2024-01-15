@@ -6,6 +6,7 @@ import camera
 import detector
 import frame_processor
 import constants as C
+import socket_sender
 
 
 def run():
@@ -20,6 +21,8 @@ def run():
     p0_recvCt = 0
     detection_process1, result_receiver1 = init_detector_process(C.REAR_CAM_SPECS, run_flag)
     p1_recvCt = 0
+
+    rio_sender = socket_sender.Socket_Sender_Host()
     
     detection_process0.start()
     detection_process1.start()
@@ -27,14 +30,12 @@ def run():
     start_time = time.time()
     try:
         while(time.time() < start_time+10):
-            pose0, p0_recvCt = get_robot_rel_pose(result_receiver0, C.PIPE_TIMEOUT, p0_recvCt)
-            pose1, p1_recvCt = get_robot_rel_pose(result_receiver1, C.PIPE_TIMEOUT, p1_recvCt)
-            if (len(pose0)):
-                print(pose0)
-                pass
-            if (len(pose1)):
-                print(pose1)
-                pass
+            pose0, p0_recvCt = get_all_robot_rel_pose(result_receiver0, C.PIPE_TIMEOUT, p0_recvCt)
+            pose1, p1_recvCt = get_all_robot_rel_pose(result_receiver1, C.PIPE_TIMEOUT, p1_recvCt)
+            for pose in pose0:
+                rio_sender.send_robot_rel_tag_data(pose)
+            for pose in pose1:
+                rio_sender.send_robot_rel_tag_data(pose)
         run_flag.value = 0
         
 

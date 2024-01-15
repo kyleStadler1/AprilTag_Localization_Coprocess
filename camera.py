@@ -28,10 +28,9 @@ class UC10MPC_ND():
         self._addr = cam_specs['addr']
         self.rotation_matrix = np.matmul(rotation_matrix_y(self.yaw), rotation_matrix_x(-self.pitch))
         self._cap = self._init_cam(self._addr, C.IMG_WIDTH, C.IMG_HEIGHT)
-        if (C.CAM_DEBUG):
+        if (C.CAM_DEBUG_STAT):
             status, frame = self._cap.read()
             print(f"{self.name} Status:{status}, Addr:{self._addr}")
-        
 
     def camera_read(self):
         read_time = t.perf_counter()
@@ -39,17 +38,16 @@ class UC10MPC_ND():
         if ret:
             frame = cv2.imdecode(frame, cv2.IMREAD_GRAYSCALE)
         else:
+            if (C.CAM_DEBUG_ERR): print(f"{self.name} sending bad frame")
             frame = ()
         return (frame, read_time)
     
     def run_camera(self, set_frame_ref):
         while self.is_running:
             frame, time_ = self.camera_read()
-            if (frame == ()):
-                print("sending bad frame")
             set_frame_ref(frame, time_)
         self._cap.release()
-        if C.CAM_DEBUG: print(f"{self.name} clean stop")
+        if C.CAM_DEBUG_STAT: print(f"{self.name} clean stop")
         return False
 
     def _init_cam(self, addr, w, h):

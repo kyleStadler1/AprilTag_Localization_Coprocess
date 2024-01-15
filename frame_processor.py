@@ -30,7 +30,7 @@ class Frame_Processor():
 
     def set_frame_ref(self, frame, time):
         if (len(frame) == 0):
-            print(f"{self._cam.name} BAD FRAME {t.time()}")
+            if (C.CAM_DEBUG_ERR): print(f"{self._cam.name} BAD FRAME {t.time()}")
             return
         self._lock.acquire()
         self._frame_ref = frame
