@@ -73,8 +73,8 @@ AT_HEIGHTS_M = {
     15 : 1.3208, #STAGE
     16 : 1.3208, #STAGE 
 }
-AT_HEIGHT_THRESH = 9.5 #meters 
-AT_ROLL_THRESH = 0.174533 #rads (10deg)
+AT_HEIGHT_THRESH = 9000.5 #meters 
+AT_ROLL_THRESH = 9 #rads (10deg)
 
 #Multiprocess Pipe Constants
 PIPE_TIMEOUT = 0.001
@@ -87,9 +87,9 @@ SENDBUF=8192
 
 #Debug Print Modes
 CAM_DEBUG_STAT = True
-CAM_DEBUG_ERR = False
+CAM_DEBUG_ERR = True
 PIPE_DEBUG = False
-POSE_DEBUG = False
+POSE_DEBUG = True
 SOCKET_DEBUG = False
 
 #DONT USE

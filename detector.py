@@ -1,11 +1,19 @@
 import dependencies.apriltag as at
+from dependencies.apriltag import Detection
 import math as m
 import numpy as np
 import constants as C
+import array
 HALF_PI = m.pi/2.0
+
+
+
+
 
 class detector():
     _detector = None
+    _once = False
+    _fake_results = None
     def __init__(self):
         self._detector = at.Detector()
         options = at.DetectorOptions(
@@ -24,10 +32,12 @@ class detector():
         
     def get_robot_rel_tags(self, frame, frame_time, intrinsics, cam_x_pos, cam_y_pos, cam_z_pos, cam_pitch, cam_yaw, cam_rot_matrix):
         raw_results = self._detector.detect(frame)
+
         intermediate_results = self._reject_ID_confThresh(raw_results)
         final_results = []
         for result in intermediate_results:
             robot_rel_tag_data = self._get_pose(result, intrinsics, cam_x_pos, cam_y_pos, cam_z_pos, cam_pitch, cam_yaw, cam_rot_matrix)
+            
             rel_tag_pose_dict = {
                 'ID' : result.tag_id,
                 'x' : robot_rel_tag_data[0],
@@ -62,7 +72,15 @@ class detector():
         return valid
     
     def _get_pose(self, result, intrinsics, cam_x_pos, cam_y_pos, cam_z_pos, cam_pitch, cam_yaw, cam_rot_matrix): #return (x,y,z,ax,ay,az)
-        pose, init_err, final_error = self._detector.detection_pose(result, intrinsics, C.AT_SIZE_MM) #at_size=145mm
+        pose = [
+            [ 6.10479750e-01, -1.86923614e-01, -7.69658390e-01, -3.85752478e+02],
+            [ 4.17101512e-01,  9.01959509e-01,  1.11782704e-01,  1.55553878e+02],
+            [ 6.73305877e-01, -3.89266755e-01,  6.28594137e-01,  1.39231544e+03],
+            [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]
+        ]
+        
+        
+        #pose, init_err, final_error = self._detector.detection_pose(result, intrinsics, C.AT_SIZE_MM) #at_size=145mm #PROBLEM LINE
         TAG_X_RAW, TAG_Y_RAW, TAG_Z_RAW = _get_tag_xyz(pose)
         TAG_AX_RAW, TAG_AY_RAW, TAG_AZ_RAW = _get_tag_angles(pose)
         point = np.array([[TAG_X_RAW], [TAG_Y_RAW], [TAG_Z_RAW]])
@@ -70,6 +88,9 @@ class detector():
         rotated_offset_pose = tuple(rotated_pose - (cam_x_pos, cam_y_pos, - cam_z_pos))
         rotated_angles = (TAG_AX_RAW - cam_pitch, TAG_AY_RAW + cam_yaw, TAG_AZ_RAW)
         return rotated_offset_pose + rotated_angles
+
+
+   
 
 def _get_tag_xyz(pose):
     # X_RAW = pose[0][3] / 1000
@@ -98,6 +119,7 @@ def _get_tag_angles(pose):
             ay1 = HALF_PI * -1
             ax1 = -1 * az1 + m.atan2(-1*R12, -1*R13)
     return(ax1, ay1, az1)
+
 
 
 

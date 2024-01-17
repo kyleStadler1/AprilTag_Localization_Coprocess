@@ -3,6 +3,7 @@ import constants as C
 
 def main():
     # Server address and port
+    #10.220.13.92
     server_address = ('stadlerpi.local', C.PORT)
 
     # Create a socket object

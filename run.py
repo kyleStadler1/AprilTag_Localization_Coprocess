@@ -25,13 +25,16 @@ def run():
 
     start_time = time.time()
     eth_stat = True
-    while(time.time() < start_time+10):
+    #while(time.time() < start_time+10):
+    while 1:
         pose_front = proc_front.get_all_robot_rel_pose()
         pose_rear = proc_rear.get_all_robot_rel_pose()
         for pose in pose_front:
             eth_stat = rio_sender.send_robot_rel_tag_data(pose)
+            pass
         for pose in pose_rear:
             eth_stat = rio_sender.send_robot_rel_tag_data(pose)
+            pass
         
         if (not(eth_stat)):
             proc_front.pause()

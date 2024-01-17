@@ -38,14 +38,23 @@ class UC10MPC_ND():
         if ret:
             frame = cv2.imdecode(frame, cv2.IMREAD_GRAYSCALE)
         else:
-            if (C.CAM_DEBUG_ERR): print(f"{self.name} sending bad frame")
+            if (C.CAM_DEBUG_ERR): print(f"{self.name} sending bad frame: {frame}")
             frame = ()
         return (frame, read_time)
     
     def run_camera(self, set_frame_ref):
+        frame_Ct = 0
+        tt = t.time()
         while self.is_running:
             frame, time_ = self.camera_read()
+            frame_Ct+=1
             set_frame_ref(frame, time_)
+            if (t.time() - tt > 1):
+                print(f"{self.name}, {frame_Ct}")
+                tt = t.time()
+                frame_Ct=0
+                
+
         self._cap.release()
         if C.CAM_DEBUG_STAT: print(f"{self.name} clean stop")
         return False
