@@ -2,6 +2,7 @@ import socket
 import constants as C
 import time as t
 from contextlib import contextmanager
+import os
 
 @contextmanager
 def create_server_socket():
@@ -20,6 +21,7 @@ class Socket_Sender_Host:
     _server_socket = None
     _conn = None
     _client_addr = None
+    _ctr = 0
     # def __init__(self):
     #     self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     #     self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #allow reuse of local addrs
@@ -34,6 +36,7 @@ class Socket_Sender_Host:
 
 
     def __init__(self):
+            waitForSockets()
             with create_server_socket() as self._server_socket:
                 if C.SOCKET_DEBUG:
                     print(f"{C.HOST}, {C.PORT}: Listening")
@@ -46,10 +49,11 @@ class Socket_Sender_Host:
 
     def send_robot_rel_tag_data(self, data_dict):
         if self._conn is not None:
-            data_string = f"^{data_dict['ID']},{data_dict['x']:.3f},{data_dict['z']:.3f},{(t.perf_counter()-data_dict['capture_time'])*1000:.0f}$"
+            data_string = f"^0,{data_dict['ID']},{data_dict['x']:.3f},{data_dict['z']:.3f},0,{(t.perf_counter()-data_dict['capture_time'])*1000:.0f},{self._ctr}$"
+            self._ctr+=1
             if (C.SOCKET_DEBUG): print(data_string)
             data_bytes = bytes(data_string, 'utf-8')
-            try:
+            try:#camid,tagid,x,y,0,age,uniqeid
                 self._conn.sendall(data_bytes)
                 return True
             except Exception as e:
@@ -60,7 +64,10 @@ class Socket_Sender_Host:
         
 
 
-
+def waitForSockets():
+    while(os.system("ping -c 1 " + C.RIOHOST) != 0):
+        print("cant ping rio, retrying")
+        t.sleep(1)
 
 
 

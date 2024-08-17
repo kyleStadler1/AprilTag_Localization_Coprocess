@@ -90,6 +90,7 @@ RECV_BUF_SIZE = 5 #in pose unites AKA the buf will hold n poses
 HOST='stadlerpi.local'
 PORT=5590
 SENDBUF=8192
+RIOHOST='google.com'
 
 #Debug Print Modes
 CAM_DEBUG_STAT = True
